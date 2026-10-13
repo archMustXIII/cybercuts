@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useEffect, useRef, useState } from "react";
 
 export default function Reveal({
@@ -15,21 +14,36 @@ export default function Reveal({
 
     if (!element) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
+    // Если браузер не поддерживает IntersectionObserver,
+    // показываем контент без анимации.
+    if (!("IntersectionObserver" in window)) {
+      setVisible(true);
+      return;
+    }
+
+    let observer: IntersectionObserver | undefined;
+
+    try {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setVisible(true);
+            observer?.disconnect();
+          }
+        },
+        {
+          threshold: 0,
+          rootMargin: "0px 0px 100px 0px",
         }
-      },
-      {
-        threshold: 0.15,
-      }
-    );
+      );
 
-    observer.observe(element);
+      observer.observe(element);
+    } catch {
+      // При ошибке наблюдения не скрываем содержимое.
+      setVisible(true);
+    }
 
-    return () => observer.disconnect();
+    return () => observer?.disconnect();
   }, []);
 
   return (
