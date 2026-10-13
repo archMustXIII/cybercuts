@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 
 export default function Reveal({
@@ -7,15 +8,13 @@ export default function Reveal({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const element = ref.current;
 
     if (!element) return;
 
-    // Если браузер не поддерживает IntersectionObserver,
-    // показываем контент без анимации.
     if (!("IntersectionObserver" in window)) {
       setVisible(true);
       return;
@@ -39,7 +38,6 @@ export default function Reveal({
 
       observer.observe(element);
     } catch {
-      // При ошибке наблюдения не скрываем содержимое.
       setVisible(true);
     }
 
